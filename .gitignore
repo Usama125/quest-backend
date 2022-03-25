@@ -1,0 +1,15 @@
+node_modules/**/*
+certs/**/*
+
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.orig.*
+
+package-lock.json
+todo.txt
+.env
+.DS_Store
+build
