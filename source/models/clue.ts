@@ -3,7 +3,15 @@ import IClue from '../interfaces/clue';
 
 const ClueSchema: Schema = new Schema(
 	{
-		hint: {
+		name: {
+			type: String,
+			required: true
+		},
+		hint_1: {
+			type: String,
+			required: true
+		},
+		hint_2: {
 			type: String,
 			required: false
 		},
@@ -17,6 +25,14 @@ const ClueSchema: Schema = new Schema(
 			required: false
 		},
 		url: {
+			type: String,
+			required: false
+		},
+		text: {
+			type: String,
+			required: false
+		},
+		ans: {
 			type: String,
 			required: false
 		}

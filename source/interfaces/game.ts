@@ -1,6 +1,10 @@
 import { Document } from 'mongoose';
 
 export default interface IGame extends Document {
-	questId: string;
+	gameTypeId: string;
 	name: string;
+	towns: string[];
+	durationType: string;
+	duration: string;
+	introduction: string;
 }

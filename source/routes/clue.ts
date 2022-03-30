@@ -5,7 +5,7 @@ import upload from '../functions/multerCloudinary';
 
 const router = express.Router();
 
-router.get('/', extractJWT, controller.getClues);
+router.get('/:gameId', extractJWT, controller.getGameClues);
 router.post('/', upload.single("file"), controller.createClue);
 router.put('/:id', upload.single("file"), controller.updateClue);
 router.delete('/:id', extractJWT, controller.deleteClue);

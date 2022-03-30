@@ -7,8 +7,8 @@ import logging from './config/logging'
 import config from './config/config'
 import mongoose from 'mongoose'
 import userRoutes from './routes/user'
-import citiesRoutes from './routes/city'
-import questsRoutes from './routes/quest'
+import townsRoutes from './routes/town'
+import gameTypesRoutes from './routes/gameType'
 import gamesRoutes from './routes/game'
 import cluesRoutes from './routes/clue'
 import cors from 'cors'
@@ -67,8 +67,8 @@ router.use(bodyParser.json({ limit: "50mb", extended: true }))
 
 /** Routes go here */
 router.use('/api/users', userRoutes)
-router.use('/api/cities', citiesRoutes)
-router.use('/api/quests', questsRoutes)
+router.use('/api/towns', townsRoutes)
+router.use('/api/game-types', gameTypesRoutes)
 router.use('/api/games', gamesRoutes)
 router.use('/api/clues', cluesRoutes)
 

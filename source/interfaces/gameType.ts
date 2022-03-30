@@ -1,5 +1,5 @@
 import { Document } from 'mongoose';
 
-export default interface ICity extends Document {
+export default interface IGameType extends Document {
 	name: string;
 }

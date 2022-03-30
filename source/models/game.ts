@@ -7,11 +7,28 @@ const GameSchema: Schema = new Schema(
 			type: String,
 			required: false
 		},
-		questId: {
+		gameTypeId: {
 			type: Schema.Types.ObjectId,
-			ref: "Quest",
+			ref: "GameType",
 			index: false
 		},
+		towns: {
+			type: [Schema.Types.ObjectId],
+			ref: "Town",
+			index: false
+		},
+		durationType: {
+			type: String,
+			required: false
+		},
+		duration: {
+			type: String,
+			required: false
+		},
+		introduction: {
+			type: String,
+			required: false
+		}
 	},
 	{
 		timestamps: true

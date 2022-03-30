@@ -7,10 +7,10 @@ import config from '../config/config'
 const NAMESPACE = "Clue"
 
 const createClue = async (req: Request, res: Response, next: NextFunction) => {
-	const { hint, type, gameId } = req.body
+	const { name, hint_1, hint_2, gameId, type, text, ans } = req.body
 
 	try {
-		if (hint && gameId && type) {
+		if (name && hint_1 && hint_2 && gameId && type && text && ans) {
 			// Upload File
 			cloudinary.v2.config({
 				cloud_name: config.cloudinary.name,
@@ -36,8 +36,8 @@ const createClue = async (req: Request, res: Response, next: NextFunction) => {
 				})
 			}
 
-			await new Clue({ hint, url: result.url, type, gameId }).save();
-			const clues = await Clue.find({}).populate("gameId");
+			await new Clue({ name, hint_1, hint_2, gameId, type, text, ans, url: result.url }).save();
+			const clues = await Clue.find({ gameId }).populate("gameId");
 			return makeResponse(res, 201, "Clue Created Successfully", clues, false)
 		} else {
 			return makeResponse(res, 400, "Validation Failed", null, true)
@@ -48,9 +48,10 @@ const createClue = async (req: Request, res: Response, next: NextFunction) => {
 	}
 }
 
-const getClues = async (req: Request, res: Response, next: NextFunction) => {
+const getGameClues = async (req: Request, res: Response, next: NextFunction) => {
 	try {
-		const result = await Clue.find({}).populate("gameId");
+		const { gameId } = req.params;
+		const result = await Clue.find({ gameId }).populate("gameId");
 		return makeResponse(res, 200, "Clues", result, false);
 	} catch (err) {
 		return makeResponse(res, 400, "Problem while getting Clues", null, true)
@@ -59,13 +60,32 @@ const getClues = async (req: Request, res: Response, next: NextFunction) => {
 
 const updateClue = async (req: Request, res: Response, next: NextFunction) => {
 	const { id } = req.params
+	try {
+		let update = JSON.parse(JSON.stringify({ ...req.body }))
 
-	const filter = { _id: id }
-	let update = { ...req.body }
+		const filter = { _id: id };
 
-	await Clue.findOneAndUpdate(filter, update, { upsert: true });
-	const updatedClues = await Clue.find({}).populate('gameId');
-	return makeResponse(res, 200, "Updated Successfully", updatedClues, false)
+		// @ts-ignore
+		if (req?.file?.path) {
+			// @ts-ignore
+			cloudinary.v2.config({
+				cloud_name: config.cloudinary.name,
+				api_key: config.cloudinary.apiKey,
+				api_secret: config.cloudinary.secretKey
+			})
+
+			// @ts-ignore
+			const result = await cloudinary.uploader.upload(req.file.path)
+			update = { ...update, url: result.url }
+		}
+
+		await Clue.findOneAndUpdate(filter, update, { upsert: true });
+		const updatedClues = await Clue.find({}).populate('gameId');
+		return makeResponse(res, 200, "Updated Successfully", updatedClues, false)
+	} catch (err: any) {
+		return makeResponse(res, 400, err.message, null, true)
+	}
+
 }
 
 const deleteClue = async (req: Request, res: Response, next: NextFunction) => {
@@ -81,7 +101,7 @@ const deleteClue = async (req: Request, res: Response, next: NextFunction) => {
 
 export default {
 	createClue,
-	getClues,
+	getGameClues,
 	updateClue,
 	deleteClue
 }
