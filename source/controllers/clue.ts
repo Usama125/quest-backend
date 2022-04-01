@@ -74,8 +74,23 @@ const updateClue = async (req: Request, res: Response, next: NextFunction) => {
 				api_secret: config.cloudinary.secretKey
 			})
 
-			// @ts-ignore
-			const result = await cloudinary.uploader.upload(req.file.path)
+			let result = null;
+			if (update.type === "IMAGE") {
+				// @ts-ignore
+				result = await cloudinary.uploader.upload(req.file.path);
+			} else if (update.type === "VIDEO" || update.type === "AUDIO") {
+				// @ts-ignore
+				result = await cloudinary.v2.uploader.upload(req.file.path, {
+					resource_type: "video",
+					public_id: "sample_id",
+					chunk_size: 6000000,
+					eager: [
+						{ width: 300, height: 300, crop: "pad", audio_codec: "none" },
+						{ width: 160, height: 100, crop: "crop", gravity: "south", audio_codec: "none" }],
+					eager_async: true,
+				})
+			}
+
 			update = { ...update, url: result.url }
 		}
 
