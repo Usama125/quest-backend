@@ -8,6 +8,13 @@ const createTown = async (req: Request, res: Response, next: NextFunction) => {
 	const { name } = req.body
 
 	if (name) {
+
+		const town = await Town.find({ name });
+
+		if (town.length > 0) {
+			return makeResponse(res, 400, "Already Exists", null, true);
+		}
+
 		const result = await new Town({ name }).save();
 		return makeResponse(res, 201, "Town Created Successfully", result, false)
 	} else {

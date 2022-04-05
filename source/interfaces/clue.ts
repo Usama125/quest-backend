@@ -9,4 +9,5 @@ export default interface IClue extends Document {
 	url: string;
 	text: string;
 	ans: string;
+	clue_type: string;
 }

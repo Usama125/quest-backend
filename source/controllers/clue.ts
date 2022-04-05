@@ -7,10 +7,10 @@ import config from '../config/config'
 const NAMESPACE = "Clue"
 
 const createClue = async (req: Request, res: Response, next: NextFunction) => {
-	const { name, hint_1, hint_2, gameId, type, text, ans } = req.body
+	const { name, hint_1, hint_2, gameId, type, text, ans, clue_type } = req.body
 
 	try {
-		if (name && hint_1 && hint_2 && gameId && type && text && ans) {
+		if (name && hint_1 && hint_2 && gameId && type && text && ans && clue_type) {
 			// Upload File
 			cloudinary.v2.config({
 				cloud_name: config.cloudinary.name,
@@ -36,7 +36,7 @@ const createClue = async (req: Request, res: Response, next: NextFunction) => {
 				})
 			}
 
-			await new Clue({ name, hint_1, hint_2, gameId, type, text, ans, url: result.url }).save();
+			await new Clue({ name, hint_1, hint_2, gameId, type, text, ans, clue_type, url: result.url }).save();
 			const clues = await Clue.find({ gameId }).populate("gameId");
 			return makeResponse(res, 201, "Clue Created Successfully", clues, false)
 		} else {
@@ -114,9 +114,21 @@ const deleteClue = async (req: Request, res: Response, next: NextFunction) => {
 	}
 }
 
+const getClueDetail = async (req: Request, res: Response, next: NextFunction) => {
+	const _id = req.params.id
+	try {
+		const clue = await Clue.findById(_id).populate("gameId")
+		if (!clue) return res.sendStatus(404)
+		return makeResponse(res, 200, "Deleted Successfully", clue, false)
+	} catch (e) {
+		return res.sendStatus(400)
+	}
+}
+
 export default {
 	createClue,
 	getGameClues,
 	updateClue,
-	deleteClue
+	deleteClue,
+	getClueDetail
 }

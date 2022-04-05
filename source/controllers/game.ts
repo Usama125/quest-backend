@@ -7,7 +7,7 @@ const NAMESPACE = "Game"
 const createGame = async (req: Request, res: Response, next: NextFunction) => {
 	const { name, gameTypeId, towns, durationType, duration, introduction } = req.body
 
-	if (name && gameTypeId && towns && durationType && duration && introduction) {
+	if (name && gameTypeId && towns && introduction) {
 		await new Game({ name, gameTypeId, towns, durationType, duration, introduction }).save();
 		const result = await Game.find({}).populate("gameTypeId").populate("towns");
 		return makeResponse(res, 201, "Game Created Successfully", result, false)

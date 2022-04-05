@@ -28,6 +28,10 @@ const GameSchema: Schema = new Schema(
 		introduction: {
 			type: String,
 			required: false
+		},
+		published: {
+			type: Boolean,
+			default: false
 		}
 	},
 	{

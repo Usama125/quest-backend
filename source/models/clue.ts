@@ -35,6 +35,10 @@ const ClueSchema: Schema = new Schema(
 		ans: {
 			type: String,
 			required: false
+		},
+		clue_type: {
+			type: String,
+			required: false
 		}
 	},
 	{

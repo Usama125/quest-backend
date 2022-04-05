@@ -7,4 +7,5 @@ export default interface IGame extends Document {
 	durationType: string;
 	duration: string;
 	introduction: string;
+	published: boolean;
 }
