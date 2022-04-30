@@ -24,8 +24,12 @@ const ClueSchema: Schema = new Schema(
 			type: String,
 			required: false
 		},
-		url: {
-			type: String,
+		urls: {
+			type: [{
+				url: {
+					type: String
+				}
+			}],
 			required: false
 		},
 		text: {

@@ -39,11 +39,6 @@ router.use((req, res, next) => {
     next()
 })
 
-/** Parse the body of the request */
-router.use(bodyParser.urlencoded({ extended: true, limit: '50mb' }))
-router.use(bodyParser.json({ limit: '50mb' }))
-// router.use(cors({credentials: true, origin: 'http://localhost:3000'}));
-
 /** Rules of our API */
 router.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', '*')
@@ -58,11 +53,11 @@ router.use((req, res, next) => {
 })
 
 // Upload Files Setup
-router.use(express.static("./source/images"))
+router.use(express.static("./source/uploads"))
 // Note:- Simply save ( req.file/files.filename ) into the database and then get the file with URL:- http://localhost:1337/filename
 
-router.use(bodyParser.urlencoded({ extended: true, limit: "100mb", parameterLimit: 10000000 }))
-router.use(bodyParser.json({ limit: "50mb", extended: true }))
+router.use(bodyParser.urlencoded({ extended: false, limit: "100mb", parameterLimit: 10000000 }))
+router.use(bodyParser.json({ limit: "50mb", extended: false }))
 
 
 /** Routes go here */
