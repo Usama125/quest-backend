@@ -130,6 +130,7 @@ const updateClue = async (req: Request, res: Response, next: NextFunction) => {
 			}
 			console.log("URLS => ", urls)
 			update = { ...update, $push: { urls } }
+
 		}
 
 		const updatedClue = await Clue.findOneAndUpdate(filter, update, { upsert: true });
