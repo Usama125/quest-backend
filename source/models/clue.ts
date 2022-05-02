@@ -15,6 +15,10 @@ const ClueSchema: Schema = new Schema(
 			type: String,
 			required: false
 		},
+		hint_3: {
+			type: String,
+			required: false
+		},
 		gameId: {
 			type: Schema.Types.ObjectId,
 			ref: "Game",

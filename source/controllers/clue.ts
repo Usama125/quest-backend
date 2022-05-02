@@ -65,13 +65,13 @@ const deleteClueFile = async (req: Request, res: Response, next: NextFunction) =
 }
 
 const createClue = async (req: Request, res: Response, next: NextFunction) => {
-	const { name, hint_1, hint_2, gameId, type, text, ans, clue_type } = req.body
+	const { name, hint_1, hint_2, hint_3, gameId, type, text, ans, clue_type } = req.body
 
 	// @ts-ignore
 	const uploader = async (path: any) => await uploads(path, "Images");
 
 	try {
-		if (name && hint_1 && hint_2 && gameId && type && text && ans && clue_type) {
+		if (name && hint_1 && hint_2 && hint_3 && gameId && type && text && ans && clue_type) {
 
 			const urls = []
 			const files = req.files;
@@ -84,7 +84,7 @@ const createClue = async (req: Request, res: Response, next: NextFunction) => {
 				fs.unlinkSync(path)
 			}
 
-			await new Clue({ name, hint_1, hint_2, gameId, type, text, ans, clue_type, urls }).save();
+			await new Clue({ name, hint_1, hint_2, hint_3, gameId, type, text, ans, clue_type, urls }).save();
 			const clues = await Clue.find({ gameId }).populate("gameId");
 			return makeResponse(res, 201, "Clue Created Successfully", clues, false)
 		} else {

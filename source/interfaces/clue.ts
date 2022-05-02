@@ -9,6 +9,7 @@ export default interface IClue extends Document {
 	gameId: string;
 	hint_1: string;
 	hint_2: string;
+	hint_3: string;
 	type: string;
 	urls: IUrl[];
 	text: string;
