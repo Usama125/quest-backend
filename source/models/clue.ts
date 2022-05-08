@@ -36,6 +36,10 @@ const ClueSchema: Schema = new Schema(
 			}],
 			required: false
 		},
+		order: {
+			type: Number,
+			required: false
+		},
 		text: {
 			type: String,
 			required: false

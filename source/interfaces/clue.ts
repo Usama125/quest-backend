@@ -12,6 +12,7 @@ export default interface IClue extends Document {
 	hint_3: string;
 	type: string;
 	urls: IUrl[];
+	order: number;
 	text: string;
 	ans: string;
 	clue_type: string;

@@ -5,6 +5,7 @@ import cloudinary from 'cloudinary'
 import config from '../config/config'
 import { uploads } from '../functions/cloudinaries'
 import fs from 'fs'
+import _ from 'lodash';
 
 const NAMESPACE = "Clue"
 
@@ -65,13 +66,13 @@ const deleteClueFile = async (req: Request, res: Response, next: NextFunction) =
 }
 
 const createClue = async (req: Request, res: Response, next: NextFunction) => {
-	const { name, hint_1, hint_2, hint_3, gameId, type, text, ans, clue_type } = req.body
+	const { name, hint_1, hint_2, hint_3, gameId, type, text, ans, clue_type, order } = req.body
 
 	// @ts-ignore
 	const uploader = async (path: any) => await uploads(path, "Images");
 
 	try {
-		if (name && hint_1 && hint_2 && hint_3 && gameId && type && text && ans && clue_type) {
+		if (name && hint_1 && hint_2 && hint_3 && gameId && order && type && text && ans && clue_type) {
 
 			const urls = []
 			const files = req.files;
@@ -84,9 +85,13 @@ const createClue = async (req: Request, res: Response, next: NextFunction) => {
 				fs.unlinkSync(path)
 			}
 
-			await new Clue({ name, hint_1, hint_2, hint_3, gameId, type, text, ans, clue_type, urls }).save();
+			await new Clue({ name, hint_1, hint_2, hint_3, gameId, order, type, text, ans, clue_type, urls }).save();
 			const clues = await Clue.find({ gameId }).populate("gameId");
-			return makeResponse(res, 201, "Clue Created Successfully", clues, false)
+
+			const standard = _.orderBy(clues.filter(clue => clue.clue_type === "STANDARD"), ['order'], ['asc'])
+			const extended = _.orderBy(clues.filter(clue => clue.clue_type === "EXTENDED"), ['order'], ['asc'])
+
+			return makeResponse(res, 201, "Clue Created Successfully", { standard, extended }, false)
 		} else {
 			return makeResponse(res, 400, "Validation Failed", null, true)
 		}
@@ -100,7 +105,11 @@ const getGameClues = async (req: Request, res: Response, next: NextFunction) => 
 	try {
 		const { gameId } = req.params;
 		const result = await Clue.find({ gameId }).populate("gameId");
-		return makeResponse(res, 200, "Clues", result, false);
+
+		const standard = _.orderBy(result.filter(clue => clue.clue_type === "STANDARD"), ['order'], ['asc'])
+		const extended = _.orderBy(result.filter(clue => clue.clue_type === "EXTENDED"), ['order'], ['asc'])
+
+		return makeResponse(res, 200, "Clues", { standard, extended }, false);
 	} catch (err) {
 		return makeResponse(res, 400, "Problem while getting Clues", null, true)
 	}
@@ -112,8 +121,6 @@ const updateClue = async (req: Request, res: Response, next: NextFunction) => {
 		let update = JSON.parse(JSON.stringify({ ...req.body }))
 
 		const filter = { _id: id };
-
-		console.log("Files => ", req.files);
 
 		// @ts-ignore
 		if (req?.files?.length > 0) {
@@ -128,7 +135,7 @@ const updateClue = async (req: Request, res: Response, next: NextFunction) => {
 				urls.push(newPath)
 				fs.unlinkSync(path)
 			}
-			console.log("URLS => ", urls)
+
 			update = { ...update, $push: { urls } }
 
 		}
@@ -136,7 +143,11 @@ const updateClue = async (req: Request, res: Response, next: NextFunction) => {
 		const updatedClue = await Clue.findOneAndUpdate(filter, update, { upsert: true });
 		// @ts-ignore
 		const updatedClues = await Clue.find({ gameId: updatedClue.gameId }).populate('gameId');
-		return makeResponse(res, 200, "Updated Successfully", updatedClues, false)
+
+		const standard = _.orderBy(updatedClues.filter(clue => clue.clue_type === "STANDARD"), ['order'], ['asc'])
+		const extended = _.orderBy(updatedClues.filter(clue => clue.clue_type === "EXTENDED"), ['order'], ['asc'])
+
+		return makeResponse(res, 200, "Updated Successfully", { standard, extended }, false)
 	} catch (err: any) {
 		return makeResponse(res, 400, err.message, null, true)
 	}
