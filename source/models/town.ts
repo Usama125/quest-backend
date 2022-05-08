@@ -6,7 +6,11 @@ const TownSchema: Schema = new Schema(
 		name: {
 			type: String,
 			required: false
-		}
+		},
+		url: {
+			type: String,
+			required: false
+		},
 	},
 	{
 		timestamps: true

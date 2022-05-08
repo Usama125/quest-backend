@@ -1,6 +1,8 @@
 import { NextFunction, Request, Response } from 'express'
 import makeResponse, { sendErrorResponse } from '../functions/makeResponse'
 import Town from '../models/town'
+import config from '../config/config'
+import cloudinary from 'cloudinary'
 
 const NAMESPACE = "Town"
 
@@ -9,14 +11,24 @@ const createTown = async (req: Request, res: Response, next: NextFunction) => {
 
 	if (name) {
 
+		// @ts-ignore
+		cloudinary.v2.config({
+			cloud_name: config.cloudinary.name,
+			api_key: config.cloudinary.apiKey,
+			api_secret: config.cloudinary.secretKey
+		})
+
+		// @ts-ignore
+		const result = await cloudinary.uploader.upload(req.file.path)
+
 		const town = await Town.find({ name });
 
 		if (town.length > 0) {
 			return makeResponse(res, 400, "Already Exists", null, true);
 		}
 
-		const result = await new Town({ name }).save();
-		return makeResponse(res, 201, "Town Created Successfully", result, false)
+		const result1 = await new Town({ name, url: result.url }).save();
+		return makeResponse(res, 201, "Town Created Successfully", result1, false)
 	} else {
 		return makeResponse(res, 400, "Validation Failed", null, true)
 	}
@@ -34,13 +46,28 @@ const getTowns = async (req: Request, res: Response, next: NextFunction) => {
 const updateTown = async (req: Request, res: Response, next: NextFunction) => {
 	const { id } = req.params
 
-	const filter = { _id: id }
-	let update = { ...req.body }
+	// @ts-ignore
+	cloudinary.v2.config({
+		cloud_name: config.cloudinary.name,
+		api_key: config.cloudinary.apiKey,
+		api_secret: config.cloudinary.secretKey
+	})
 
-	Town.findOneAndUpdate(filter, update).then(updatedTown => {
+	const filter = { _id: id }
+	let update = {};
+	// @ts-ignore
+	if (req?.file?.path) {
+		// @ts-ignore
+		const result = await cloudinary.uploader.upload(req.file.path)
+		update = { url: result.url, name: req.body.name }
+	} else {
+		update = { name: req.body.name }
+	}
+
+	Town.findOneAndUpdate(filter, update, { new: true }).then(updatedTown => {
 		return makeResponse(res, 200, "Town updated Successfully", updatedTown, false)
 	}).catch(err => {
-		return makeResponse(res, 400, err.message, null, true)
+		return sendErrorResponse(res, 400, "Unable to update record", 400);
 	})
 }
 
